@@ -10,6 +10,10 @@
     "netstandard1.6": {
       "imports": "dnxcore50"
     }
+  },
+
+  "buildOptions": {
+    "outputName": "Fasterflect.Netstandard"
   }
 }
 
