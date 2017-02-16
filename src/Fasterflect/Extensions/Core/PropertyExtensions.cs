@@ -377,12 +377,12 @@ namespace Fasterflect
 				return type.Properties( bindingFlags, name ).FirstOrDefault();
 			}
 
-			var result = type.GetProperty( name, bindingFlags | Flags.DeclaredOnly );
+			var result = type.GetTypeInfo().GetProperty( name, bindingFlags | Flags.DeclaredOnly );
 			if( result == null && bindingFlags.IsNotSet( Flags.DeclaredOnly ) )
 			{
-				if( type.BaseType != typeof(object) && type.BaseType != null )
+				if( type.GetTypeInfo().BaseType != typeof(object) && type.GetTypeInfo().BaseType != null )
 				{
-					return type.BaseType.Property( name, bindingFlags );
+					return type.GetTypeInfo().BaseType.Property( name, bindingFlags );
 				}
 			}
 			bool hasSpecialFlags = bindingFlags.IsSet( Flags.ExcludeExplicitlyImplemented );
@@ -431,7 +431,7 @@ namespace Fasterflect
 
 			if( ! recurse && ! hasNames && ! hasSpecialFlags )
 			{
-				return type.GetProperties( bindingFlags ) ?? Constants.EmptyPropertyInfoArray;
+				return type.GetTypeInfo().GetProperties( bindingFlags ) ?? Constants.EmptyPropertyInfoArray;
 			}
 
 			var properties = GetProperties( type, bindingFlags );
@@ -446,19 +446,19 @@ namespace Fasterflect
 
 			if( ! recurse )
 			{
-				return type.GetProperties( bindingFlags ) ?? Constants.EmptyPropertyInfoArray;
+				return type.GetTypeInfo().GetProperties( bindingFlags ) ?? Constants.EmptyPropertyInfoArray;
 			}
 
 			bindingFlags |= Flags.DeclaredOnly;
 			bindingFlags &= ~BindingFlags.FlattenHierarchy;
 
 			var properties = new List<PropertyInfo>();
-			properties.AddRange( type.GetProperties( bindingFlags ) );
-			Type baseType = type.BaseType;
+			properties.AddRange( type.GetTypeInfo().GetProperties( bindingFlags ) );
+			Type baseType = type.GetTypeInfo().BaseType;
 			while( baseType != null && baseType != typeof(object) )
 			{
-				properties.AddRange( baseType.GetProperties( bindingFlags ) );
-				baseType = baseType.BaseType;
+				properties.AddRange( baseType.GetTypeInfo().GetProperties( bindingFlags ) );
+				baseType = baseType.GetTypeInfo().BaseType;
 			}
 			return properties;
 		}

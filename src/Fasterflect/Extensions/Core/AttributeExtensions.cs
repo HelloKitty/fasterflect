@@ -96,7 +96,7 @@ namespace Fasterflect
 			return provider.GetCustomAttributes( true ).Cast<Attribute>()
 				.Where( attr => ! hasTypes || 
 						attributeTypes.Any( at => { Type type = attr.GetType();
-													return at == type || at.IsSubclassOf(type); } ) ).ToList();
+													return at == type || at.GetTypeInfo().IsSubclassOf(type); } ) ).ToList();
 		}
 
 		/// <summary>

@@ -74,7 +74,7 @@ namespace Fasterflect.Emitter
 
 		public bool IsTargetTypeStruct
 		{
-			get { return TargetType.IsValueType; }
+			get { return TargetType.GetTypeInfo().IsValueType; }
 		}
 
 		public bool HasNoParam

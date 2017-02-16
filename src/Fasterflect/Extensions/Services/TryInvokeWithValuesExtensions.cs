@@ -265,7 +265,7 @@ namespace Fasterflect
 		private static bool StandardConvert(Type targetType, object owner, ref object value)
 		{
 			if( value == null )
-				return !typeof(ValueType).IsAssignableFrom( targetType );
+				return !typeof(ValueType).GetTypeInfo().IsAssignableFrom( targetType );
 			try
 			{
 				return (value = TypeConverter.Get( targetType, value )) != null;
@@ -278,7 +278,7 @@ namespace Fasterflect
 
 		private static bool IsParams(ParameterInfo param)
 		{
-			return param.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0;
+			return param.GetCustomAttributes(typeof(ParamArrayAttribute), false).Any();
 		}
 	}
 }

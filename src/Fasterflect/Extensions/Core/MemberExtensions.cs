@@ -53,16 +53,16 @@ namespace Fasterflect
 				return type.Members( MemberTypes.All, bindingFlags, name ).FirstOrDefault();
 			}
 
-			IList<MemberInfo> result = type.GetMember( name, bindingFlags );
+			IList<MemberInfo> result = type.GetTypeInfo().GetMember( name, bindingFlags );
 			bool hasSpecialFlags = bindingFlags.IsAnySet( Flags.ExcludeBackingMembers | Flags.ExcludeExplicitlyImplemented | Flags.ExcludeHiddenMembers );
 			result = hasSpecialFlags && result.Count > 0 ? result.Filter( bindingFlags ) : result;
 			bool found = result.Count > 0;
 
 			if( !found && bindingFlags.IsNotSet( Flags.DeclaredOnly ) )
 			{
-				if( type.BaseType != typeof(object) && type.BaseType != null )
+				if( type.GetTypeInfo().BaseType != typeof(object) && type.GetTypeInfo().BaseType != null )
 				{
-					return type.BaseType.Member( name, bindingFlags );
+					return type.GetTypeInfo().BaseType.Member( name, bindingFlags );
 				}
 			}
 			return found ? result[ 0 ] : null;
@@ -163,7 +163,7 @@ namespace Fasterflect
 
 			if( ! recurse && ! hasNames && ! hasSpecialFlags )
 			{
-				return type.FindMembers( memberTypes, bindingFlags, null, null );
+				return type.GetTypeInfo().FindMembers( memberTypes, bindingFlags, null, null );
 			}
 
 			var members = GetMembers( type, memberTypes, bindingFlags );
@@ -178,19 +178,19 @@ namespace Fasterflect
 
 			if( ! recurse )
 			{
-				return type.FindMembers( memberTypes, bindingFlags, null, null );
+				return type.GetTypeInfo().FindMembers( memberTypes, bindingFlags, null, null );
 			}
 
 			bindingFlags |= Flags.DeclaredOnly;
 			bindingFlags &= ~BindingFlags.FlattenHierarchy;
 
 			var members = new List<MemberInfo>();
-			members.AddRange( type.FindMembers( memberTypes, bindingFlags, null, null ) );
-			Type baseType = type.BaseType;
+			members.AddRange( type.GetTypeInfo().FindMembers( memberTypes, bindingFlags, null, null ) );
+			Type baseType = type.GetTypeInfo().BaseType;
 			while( baseType != null && baseType != typeof(object) )
 			{
-				members.AddRange( baseType.FindMembers( memberTypes, bindingFlags, null, null ) );
-				baseType = baseType.BaseType;
+				members.AddRange( baseType.GetTypeInfo().FindMembers( memberTypes, bindingFlags, null, null ) );
+				baseType = baseType.GetTypeInfo().BaseType;
 			}
 			return members;
 		}

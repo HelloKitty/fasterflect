@@ -16,6 +16,7 @@
 // The latest version of this file can be found at http://fasterflect.codeplex.com/
 #endregion
 
+using System.Reflection;
 using Fasterflect.Emitter;
 
 namespace Fasterflect
@@ -34,7 +35,7 @@ namespace Fasterflect
         /// is a value type, or <paramref name="obj"/> itself if it's a reference type.</returns>
         public static object WrapIfValueType( this object obj )
         {
-            return obj.GetType().IsValueType ? new ValueTypeHolder( obj ) : obj;
+            return obj.GetType().GetTypeInfo().IsValueType ? new ValueTypeHolder( obj ) : obj;
         }
 
         ///<summary>

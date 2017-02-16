@@ -132,12 +132,12 @@ namespace Fasterflect
 				return type.Fields( bindingFlags, name ).FirstOrDefault();
 			}
 
-			var result = type.GetField( name, bindingFlags );
+			var result = type.GetTypeInfo().GetField( name, bindingFlags );
 			if( result == null && bindingFlags.IsNotSet( Flags.DeclaredOnly ) )
 			{
-				if( type.BaseType != typeof(object) && type.BaseType != null )
+				if( type.GetTypeInfo().BaseType != typeof(object) && type.GetTypeInfo().BaseType != null )
 				{
-					return type.BaseType.Field( name, bindingFlags );
+					return type.GetTypeInfo().BaseType.Field( name, bindingFlags );
 				}
 			}
 			bool hasSpecialFlags = bindingFlags.IsAnySet( Flags.ExcludeBackingMembers | Flags.ExcludeExplicitlyImplemented | Flags.ExcludeHiddenMembers );
@@ -191,7 +191,7 @@ namespace Fasterflect
 
 			if( ! recurse && ! hasNames && ! hasSpecialFlags )
 			{
-				return type.GetFields( bindingFlags ) ?? new FieldInfo[0];
+				return type.GetTypeInfo().GetFields( bindingFlags ) ?? new FieldInfo[0];
 			}
 
 			var fields = GetFields( type, bindingFlags );
@@ -206,19 +206,19 @@ namespace Fasterflect
 
 			if( ! recurse )
 			{
-				return type.GetFields( bindingFlags ) ?? new FieldInfo[0];
+				return type.GetTypeInfo().GetFields( bindingFlags ) ?? new FieldInfo[0];
 			}
 
 			bindingFlags |= Flags.DeclaredOnly;
 			bindingFlags &= ~BindingFlags.FlattenHierarchy;
 
 			var fields = new List<FieldInfo>();
-			fields.AddRange( type.GetFields( bindingFlags ) );
-			Type baseType = type.BaseType;
+			fields.AddRange( type.GetTypeInfo().GetFields( bindingFlags ) );
+			Type baseType = type.GetTypeInfo().BaseType;
 			while( baseType != null && baseType != typeof(object) )
 			{
-				fields.AddRange( baseType.GetFields( bindingFlags ) );
-				baseType = baseType.BaseType;
+				fields.AddRange( baseType.GetTypeInfo().GetFields( bindingFlags ) );
+				baseType = baseType.GetTypeInfo().BaseType;
 			}
 			return fields;
 		}

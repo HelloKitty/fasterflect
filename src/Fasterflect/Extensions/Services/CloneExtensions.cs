@@ -117,9 +117,9 @@ namespace Fasterflect
 			if( obj == null )
 				return false;
 			Type type = obj.GetType();
-			if( type.IsValueType || type == typeof(string) )
+			if( type.GetTypeInfo().IsValueType || type == typeof(string) )
 				return false;
-			if( type.IsGenericTypeDefinition || obj is Type || obj is Delegate )
+			if( type.GetTypeInfo().IsGenericTypeDefinition || obj is Type || obj is Delegate )
 				return false;
 			return true;
 		}

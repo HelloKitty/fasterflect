@@ -96,7 +96,7 @@ namespace Fasterflect
 		{
 			var result = new List<T>( methods.Count );
 
-			bool exact = bindingFlags.IsSet( Flags.ExactBinding );
+			bool exact = false;
 			for( int i = 0; i < methods.Count; i++ )
 			{
 				var method = methods[ i ];
@@ -119,8 +119,13 @@ namespace Fasterflect
 						string name = parameterType.FullName;
 						parameterType = Type.GetType( name.Substring( 0, name.Length - 1 ) ) ?? parameterType;
 					}
+
+#if NETSTANDARD1_6
+					match &= parameterType.IsGenericParameter || parameterType.GetTypeInfo().ContainsGenericParameters || (exact ? type == parameterType : parameterType.GetTypeInfo().IsAssignableFrom( type ));
+#else
 					match &= parameterType.IsGenericParameter || parameterType.ContainsGenericParameters || (exact ? type == parameterType : parameterType.IsAssignableFrom( type ));
-					if( ! match )
+#endif
+					if ( ! match )
 					{
 						break;
 					}

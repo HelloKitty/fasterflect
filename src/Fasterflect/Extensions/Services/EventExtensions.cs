@@ -110,7 +110,7 @@ namespace Fasterflect
 			Type delegateType;
 			var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic |
 							   (target == null ? BindingFlags.Static : BindingFlags.Instance);
-			var eventInfo = targetType.GetEvent(fieldName, bindingFlags);
+			var eventInfo = targetType.GetTypeInfo().GetEvent(fieldName, bindingFlags);
 			if (eventInfo != null && assignHandler)
 				throw new ArgumentException("Event can be assigned.  Use AddHandler() overloads instead.");
 
@@ -150,12 +150,12 @@ namespace Fasterflect
 		/// <returns></returns>
 		public static Delegate BuildDynamicHandler(this Type delegateType, Func<object[], object> func)
 		{
-			var invokeMethod = delegateType.GetMethod("Invoke");
+			var invokeMethod = delegateType.GetTypeInfo().GetMethod("Invoke");
 			var parameters = invokeMethod.GetParameters().Select(parm =>
 				Expression.Parameter(parm.ParameterType, parm.Name)).ToArray();
 			var instance = func.Target == null ? null : Expression.Constant(func.Target);
 			var convertedParameters = parameters.Select(parm => Expression.Convert(parm, typeof(object))).Cast<Expression>().ToArray();
-			var call = Expression.Call(instance, func.Method, Expression.NewArrayInit(typeof(object), convertedParameters));
+			var call = Expression.Call(instance, func.GetMethodInfo(), Expression.NewArrayInit(typeof(object), convertedParameters));
 			var body = invokeMethod.ReturnType == typeof(void)
 				? (Expression)call
 				: Expression.Convert(call, invokeMethod.ReturnType);

@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Fasterflect
 {
@@ -55,11 +56,11 @@ namespace Fasterflect
 		{
 			if( type == null || interfaceType == null || type == interfaceType )
 				return false;
-			if( interfaceType.IsGenericTypeDefinition && type.GetInterfaces().Where( t => t.IsGenericType ).Select( t => t.GetGenericTypeDefinition() ).Any( gt => gt == interfaceType ) )
+			if( interfaceType.GetTypeInfo().IsGenericTypeDefinition && type.GetTypeInfo().GetInterfaces().Where( t => t.GetTypeInfo().IsGenericType ).Select( t => t.GetGenericTypeDefinition() ).Any( gt => gt == interfaceType ) )
 			{
 				return true;
 			}
-			return interfaceType.IsAssignableFrom( type );
+			return interfaceType.GetTypeInfo().IsAssignableFrom( type );
 		}
 		#endregion
 
@@ -94,10 +95,10 @@ namespace Fasterflect
 				return true;
 			while( type != null && type != rootType )
 			{
-				var current = type.IsGenericType && baseType.IsGenericTypeDefinition ? type.GetGenericTypeDefinition() : type;
+				var current = type.GetTypeInfo().IsGenericType && baseType.GetTypeInfo().IsGenericTypeDefinition ? type.GetGenericTypeDefinition() : type;
 				if( baseType == current )
 					return true;
-				type = type.BaseType;
+				type = type.GetTypeInfo().BaseType;
 			}
 			return false;
 		}
@@ -125,7 +126,7 @@ namespace Fasterflect
 		{
 			if( type == null || baseType == null )
 				return false;
-			return baseType.IsInterface ? type.Implements( baseType ) : type.Inherits( baseType );
+			return baseType.GetTypeInfo().IsInterface ? type.Implements( baseType ) : type.Inherits( baseType );
 		}
 		#endregion
 
@@ -162,7 +163,7 @@ namespace Fasterflect
 			{
 				throw new ArgumentNullException( "type" );
 			}
-			byte[] publicKeyToken = type.Assembly.GetName().GetPublicKeyToken();
+			byte[] publicKeyToken = type.GetTypeInfo().Assembly.GetName().GetPublicKeyToken();
 			return publicKeyToken != null && tokens.Contains( publicKeyToken, new ByteArrayEqualityComparer() );
 		}
 		#endregion
@@ -179,15 +180,15 @@ namespace Fasterflect
 			{
 				return string.Format( "{0}[]", type.GetElementType().Name() );
 			}
-			if( type.ContainsGenericParameters || type.IsGenericType )
+			if( type.GetTypeInfo().ContainsGenericParameters || type.GetTypeInfo().IsGenericType )
 			{
-				if( type.BaseType == typeof(Nullable<>) || (type.BaseType == typeof(ValueType) && type.UnderlyingSystemType.Name.StartsWith( "Nullable" )) )
+				if( type.GetTypeInfo().BaseType == typeof(Nullable<>) || (type.GetTypeInfo().BaseType == typeof(ValueType) && type.GetTypeInfo().UnderlyingSystemType.Name.StartsWith( "Nullable" )) )
 				{
-					return GetCSharpTypeName( type.GetGenericArguments().Single().Name ) + "?";
+					return GetCSharpTypeName( type.GetTypeInfo().GetGenericArguments().Single().Name ) + "?";
 				}
 				int index = type.Name.IndexOf( "`" );
 				string genericTypeName = index > 0 ? type.Name.Substring( 0, index ) : type.Name;
-				string genericArgs = string.Join( ",", type.GetGenericArguments().Select( t => t.Name() ).ToArray() );
+				string genericArgs = string.Join( ",", type.GetTypeInfo().GetGenericArguments().Select( t => t.Name() ).ToArray() );
 				return genericArgs.Length == 0 ? genericTypeName : genericTypeName + "<" + genericArgs + ">";
 			}
 			return GetCSharpTypeName( type.Name );

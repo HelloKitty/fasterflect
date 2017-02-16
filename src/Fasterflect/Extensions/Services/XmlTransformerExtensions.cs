@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace Fasterflect
@@ -81,10 +82,10 @@ namespace Fasterflect
 				{
 					object propertyValue = propertyInfo.Get( obj );
 					Type propertyType = propertyInfo.PropertyType;
-					if( (propertyType.IsClass || propertyType.IsInterface) && propertyType != typeof(string) )
+					if( (propertyType.GetTypeInfo().IsClass || propertyType.GetTypeInfo().IsInterface) && propertyType != typeof(string) )
 					{
 					}
-					if( (propertyType.IsClass || propertyType.IsInterface) && propertyType != typeof(string) )
+					if( (propertyType.GetTypeInfo().IsClass || propertyType.GetTypeInfo().IsInterface) && propertyType != typeof(string) )
 					{
 						sb.AppendFormat( ToXml( propertyValue, string.Empty, afterElementDecoration, indentDecoration, currentIndent ) );
 					}

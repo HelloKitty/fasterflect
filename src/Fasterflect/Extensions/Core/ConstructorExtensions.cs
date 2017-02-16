@@ -116,7 +116,7 @@ namespace Fasterflect
 		public static IList<T> CreateInstances<T>( this Assembly assembly )
 		{
 			var query = from type in assembly.TypesImplementing<T>() 
-						where type.IsClass && ! type.IsAbstract && type.Constructor() != null 
+						where type.GetTypeInfo().IsClass && ! type.GetTypeInfo().IsAbstract && type.Constructor() != null 
 						select (T) type.CreateInstance();
 			return query.ToList();
 		}
@@ -145,7 +145,8 @@ namespace Fasterflect
 		/// <returns>The matching constructor or null if no match was found.</returns>
 		public static ConstructorInfo Constructor( this Type type, Flags bindingFlags, params Type[] parameterTypes )
 		{
-			return type.GetConstructor( bindingFlags, null, parameterTypes, null );
+			//TODO: Change this back to a more specific
+			return type.GetTypeInfo().GetConstructor(parameterTypes);
 		}
 		#endregion
 
@@ -169,7 +170,7 @@ namespace Fasterflect
 		/// <returns>A list of matching constructors. This value will never be null.</returns>
 		public static IList<ConstructorInfo> Constructors( this Type type, Flags bindingFlags )
 		{
-			return type.GetConstructors( bindingFlags ); //.Where( ci => !ci.IsAbstract ).ToList();
+			return type.GetTypeInfo().GetConstructors( bindingFlags ); //.Where( ci => !ci.IsAbstract ).ToList();
 		}
 		#endregion
 	}

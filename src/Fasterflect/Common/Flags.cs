@@ -88,12 +88,6 @@ namespace Fasterflect
 		public static readonly Flags DeclaredOnly = new Flags( (long) BindingFlags.DeclaredOnly );
 
 		/// <summary>
-		/// This value corresponds to the <see href="BindingFlags.ExactBinding"/> value. 
-		/// Note that this value is respected even in cases where normal Reflection calls would ignore it.
-		/// </summary>
-		public static readonly Flags ExactBinding = new Flags( (long) BindingFlags.ExactBinding );
-
-		/// <summary>
 		/// This value corresponds to the <see href="BindingFlags.Public"/> value.
 		/// </summary>
 		public static readonly Flags Public = new Flags( (long) BindingFlags.Public );

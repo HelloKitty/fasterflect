@@ -33,7 +33,7 @@ namespace Fasterflect
         /// <returns>True if null can be assigned, false otherwise.</returns>
         public static bool IsNullable( this ParameterInfo parameter )
         {
-            return ! parameter.ParameterType.IsValueType || parameter.ParameterType.IsSubclassOf( typeof(Nullable) );
+            return ! parameter.ParameterType.GetTypeInfo().IsValueType || parameter.ParameterType.GetTypeInfo().IsSubclassOf( typeof(Nullable) );
         }
 
         /// <summary>

@@ -76,7 +76,7 @@ namespace Fasterflect.Emitter
 			{
 				var field = member as FieldInfo;
 
-				if( field.DeclaringType.IsEnum ) // special enum handling as ldsfld does not support enums
+				if( field.DeclaringType.GetTypeInfo().IsEnum ) // special enum handling as ldsfld does not support enums
 				{
 					Generator.ldc_i4( (int) field.GetValue( field.DeclaringType ) )
 							 .boxIfValueType( field.FieldType );

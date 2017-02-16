@@ -11,13 +11,6 @@ namespace Fasterflect
 	/// </summary>
 	internal static class EnumReflectionExtensions
 	{
-		public static bool isEnumType(this Type type)
-		{
-#if NETSTANDARD1_6
-			return type.GetTypeInfo().IsEnum;
-#else
-			return type.IsEnum;
-#endif
-		}
+
 	}
 }

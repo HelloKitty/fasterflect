@@ -48,7 +48,7 @@ namespace Fasterflect.Probing
 			}
 			try
 			{
-				if( targetType.isEnumType() )
+				if( targetType.GetTypeInfo().IsEnum )
 				{
 					return ConvertEnums( targetType, sourceType, value );
 				}
@@ -89,7 +89,7 @@ namespace Fasterflect.Probing
 			{
 				return Get( targetType, value as string );
 			}
-			if( targetType.isEnumType() || sourceType.isEnumType())
+			if( targetType.GetTypeInfo().IsEnum || sourceType.GetTypeInfo().IsEnum )
 			{
 				return ConvertEnums( targetType, sourceType, value );
 			}
@@ -137,7 +137,7 @@ namespace Fasterflect.Probing
 		/// </summary>
 		private static object ConvertEnums( Type targetType, Type sourceType, object value )
 		{
-			if( targetType.isEnumType())
+			if( targetType.GetTypeInfo().IsEnum )
 			{
 				if( sourceType == typeof(string) )
 				{

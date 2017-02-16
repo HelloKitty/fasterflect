@@ -134,7 +134,7 @@ namespace Fasterflect.Probing
 					// permit casing differences to allow for matching lower-case parameters to upper-case properties
 					if( parameter.HasName( paramName ) )
 					{
-						bool compatible = parameter.ParameterType.IsAssignableFrom( paramType );
+						bool compatible = parameter.ParameterType.GetTypeInfo().IsAssignableFrom( paramType );
 						// avoid checking if implicit conversion is possible
 						bool convertible = ! compatible && IsConvertible( paramType, parameter.ParameterType, sampleParamValues[ invokeParamIndex ] );
 						if( compatible || convertible )
@@ -184,7 +184,7 @@ namespace Fasterflect.Probing
 					}
 					bool exists = member != null; 
 					Type memberType = member != null ? member.Type() : null;
-					bool compatible = exists && memberType.IsAssignableFrom( paramType );
+					bool compatible = exists && memberType.GetTypeInfo().IsAssignableFrom( paramType );
 					// avoid checking if implicit conversion is possible
 					bool convertible = exists && ! compatible && IsConvertible( paramType, memberType, sampleParamValues[ invokeParamIndex ] );
 					if( method.IsConstructor && (compatible || convertible) )

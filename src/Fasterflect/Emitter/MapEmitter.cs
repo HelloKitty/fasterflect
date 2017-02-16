@@ -125,7 +125,7 @@ namespace Fasterflect.Emitter
 			var query = from s in sourceType.Members(sourceMemberTypes, CallInfo.BindingFlags, names)
 						from t in CallInfo.TargetType.Members(targetMemberTypes, CallInfo.BindingFlags, names)
 						where s.Name.Equals(t.Name, comparison) &&
-							  t.Type().IsAssignableFrom(s.Type()) &&
+							  t.Type().GetTypeInfo().IsAssignableFrom(s.Type()) &&
 							  s.IsReadable() && t.IsWritable()
 						select new { Source = s, Target = t };
 			return query.ToDictionary(k => k.Source, v => v.Target);

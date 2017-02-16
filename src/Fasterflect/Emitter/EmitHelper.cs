@@ -197,26 +197,6 @@ namespace Fasterflect.Emitter
 		}
 
 		/// <summary>
-		/// Marks a sequence point in the Microsoft intermediate language (MSIL) stream.
-		/// </summary>
-		/// <param name="document">The document for which the sequence point is being defined.</param>
-		/// <param name="startLine">The line where the sequence point begins.</param>
-		/// <param name="startColumn">The column in the line where the sequence point begins.</param>
-		/// <param name="endLine">The line where the sequence point ends.</param>
-		/// <param name="endColumn">The column in the line where the sequence point ends.</param>
-		/// <returns>Current instance of the <see cref="EmitHelper"/>.</returns>
-		public EmitHelper MarkSequencePoint(
-			ISymbolDocumentWriter document,
-			int startLine,
-			int startColumn,
-			int endLine,
-			int endColumn )
-		{
-			_ilGenerator.MarkSequencePoint( document, startLine, startColumn, endLine, endColumn );
-			return this;
-		}
-
-		/// <summary>
 		/// Emits an instruction to throw an exception.
 		/// </summary>
 		/// <param name="exceptionType">The class of the type of exception to throw.</param>
@@ -644,7 +624,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			return type.IsValueType ? box( type ) : this;
+			return type.GetTypeInfo().IsValueType ? box( type ) : this;
 		}
 
 		/// <summary>
@@ -796,7 +776,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			MethodInfo methodInfo = type.GetMethod( methodName, optionalParameterTypes );
+			MethodInfo methodInfo = type.GetTypeInfo().GetMethod( methodName, optionalParameterTypes );
 
 			if( methodInfo == null )
 			{
@@ -804,69 +784,6 @@ namespace Fasterflect.Emitter
 			}
 
 			return call( methodInfo );
-		}
-
-		/// <summary>
-		/// Calls ILGenerator.EmitCall(<see cref="OpCodes.Call"/>, methodInfo, optionalParameterTypes) that
-		/// calls the method indicated by the passed method descriptor.
-		/// </summary>
-		/// <param name="type">A Type</param>
-		/// <param name="methodName">The name of the method to be called.</param>
-		/// <param name="bindingFlags">A bitmask comprised of one or more <see cref="BindingFlags"/> 
-		/// that specify how the search is conducted.</param>
-		/// <param name="optionalParameterTypes">The types of the optional arguments if the method is a varargs method.</param>
-		/// <seealso cref="OpCodes.Call">OpCodes.Call</seealso>
-		/// <seealso cref="System.Reflection.Emit.ILGenerator.EmitCall(OpCode,MethodInfo,Type[])">ILGenerator.EmitCall</seealso>
-		public EmitHelper call( Type type, string methodName, BindingFlags bindingFlags,
-		                        params Type[] optionalParameterTypes )
-		{
-			if( type == null )
-			{
-				throw new ArgumentNullException( "type" );
-			}
-
-			MethodInfo methodInfo = type.GetMethod( methodName, bindingFlags, null, optionalParameterTypes, null );
-
-			if( methodInfo == null )
-			{
-				throw CreateNoSuchMethodException( type, methodName );
-			}
-
-			return call( methodInfo );
-		}
-
-		/// <summary>
-		/// Calls ILGenerator.EmitCalli(<see cref="OpCodes.Calli"/>, <see cref="CallingConvention"/>, Type, Type[]) that
-		/// calls the method indicated on the evaluation stack (as a pointer to an entry point) 
-		/// with arguments described by a calling convention using an unmanaged calling convention.
-		/// </summary>
-		/// <param name="unmanagedCallConv">The unmanaged calling convention to be used.</param>
-		/// <param name="returnType">The Type of the result.</param>
-		/// <param name="parameterTypes">The types of the required arguments to the instruction.</param>
-		/// <seealso cref="OpCodes.Calli">OpCodes.Calli</seealso>
-		/// <seealso cref="System.Reflection.Emit.ILGenerator.EmitCalli(OpCode,CallingConvention,Type,Type[])">ILGenerator.EmitCalli</seealso>
-		public EmitHelper calli( CallingConvention unmanagedCallConv, Type returnType, Type[] parameterTypes )
-		{
-			_ilGenerator.EmitCalli( OpCodes.Calli, unmanagedCallConv, returnType, parameterTypes );
-			return this;
-		}
-
-		/// <summary>
-		/// Calls ILGenerator.EmitCalli(<see cref="OpCodes.Calli"/>, <see cref="CallingConvention"/>, Type, Type[], Type[]) that
-		/// calls the method indicated on the evaluation stack (as a pointer to an entry point)
-		/// with arguments described by a calling convention using a managed calling convention.
-		/// </summary>
-		/// <param name="callingConvention">The managed calling convention to be used.</param>
-		/// <param name="returnType">The Type of the result.</param>
-		/// <param name="parameterTypes">The types of the required arguments to the instruction.</param>
-		/// <param name="optionalParameterTypes">The types of the optional arguments for vararg calls.</param>
-		/// <seealso cref="OpCodes.Calli">OpCodes.Calli</seealso>
-		/// <seealso cref="System.Reflection.Emit.ILGenerator.EmitCalli(OpCode,CallingConventions,Type,Type[],Type[])">ILGenerator.EmitCalli</seealso>
-		public EmitHelper calli( CallingConventions callingConvention, Type returnType, Type[] parameterTypes,
-		                         Type[] optionalParameterTypes )
-		{
-			_ilGenerator.EmitCalli( OpCodes.Calli, callingConvention, returnType, parameterTypes, optionalParameterTypes );
-			return this;
 		}
 
 		/// <summary>
@@ -912,7 +829,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			MethodInfo methodInfo = type.GetMethod( methodName, optionalParameterTypes );
+			MethodInfo methodInfo = type.GetTypeInfo().GetMethod( methodName, optionalParameterTypes );
 
 			if( methodInfo == null )
 			{
@@ -938,8 +855,8 @@ namespace Fasterflect.Emitter
 		{
 			MethodInfo methodInfo =
 				optionalParameterTypes == null
-					? type.GetMethod( methodName, bindingFlags )
-					: type.GetMethod( methodName, bindingFlags, null, optionalParameterTypes, null );
+					? type.GetTypeInfo().GetMethod( methodName, bindingFlags )
+					: type.GetTypeInfo().GetMethod( methodName, optionalParameterTypes );
 
 			if( methodInfo == null )
 			{
@@ -989,7 +906,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			return type.IsValueType ? unbox_any( type ) : castclass( type );
+			return type.GetTypeInfo().IsValueType ? unbox_any( type ) : castclass( type );
 		}
 
 		/// <summary>
@@ -1229,9 +1146,9 @@ namespace Fasterflect.Emitter
 
 				default:
 				{
-					if( type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) )
+					if( type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) )
 					{
-						ConstructorInfo ci = type.GetConstructor( type.GetGenericArguments() );
+						ConstructorInfo ci = type.GetTypeInfo().GetConstructor( type.GetTypeInfo().GetGenericArguments() );
 						if( ci != null )
 						{
 							newobj( ci );
@@ -2734,11 +2651,11 @@ namespace Fasterflect.Emitter
 					break;
 
 				default:
-					if( type.IsClass )
+					if( type.GetTypeInfo().IsClass )
 					{
 						ldind_ref.end();
 					}
-					else if( type.IsValueType )
+					else if( type.GetTypeInfo().IsValueType )
 					{
 						stobj( type );
 					}
@@ -3201,7 +3118,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			ConstructorInfo ci = type.GetConstructor( parameters );
+			ConstructorInfo ci = type.GetTypeInfo().GetConstructor( parameters );
 
 			return newobj( ci );
 		}
@@ -3782,11 +3699,11 @@ namespace Fasterflect.Emitter
 					break;
 
 				default:
-					if( type.IsClass )
+					if( type.GetTypeInfo().IsClass )
 					{
 						stind_ref.end();
 					}
-					else if( type.IsValueType )
+					else if( type.GetTypeInfo().IsValueType )
 					{
 						stobj( type );
 					}
@@ -4130,7 +4047,7 @@ namespace Fasterflect.Emitter
 				throw new ArgumentNullException( "type" );
 			}
 
-			return type.IsValueType ? unbox_any( type ) : this;
+			return type.GetTypeInfo().IsValueType ? unbox_any( type ) : this;
 		}
 
 		/// <summary>
@@ -4173,7 +4090,7 @@ namespace Fasterflect.Emitter
 		public void end()
 		{
 		}
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Loads default value of given type onto the evaluation stack.
@@ -4210,11 +4127,11 @@ namespace Fasterflect.Emitter
 					break;
 
 				case TypeCode.String:
-					ldsfld( typeof(string).GetField( "Empty" ) );
+					ldsfld( typeof(string).GetTypeInfo().GetField( "Empty" ) );
 					break;
 
 				default:
-					if( type.IsClass || type.IsInterface )
+					if( type.GetTypeInfo().IsClass || type.GetTypeInfo().IsInterface )
 					{
 						ldnull.end();
 					}
@@ -4303,12 +4220,12 @@ namespace Fasterflect.Emitter
 
 			Type type = localBuilder.LocalType;
 
-			if( type.IsEnum )
+			if( type.GetTypeInfo().IsEnum )
 			{
 				type = Enum.GetUnderlyingType( type );
 			}
 
-			return type.IsValueType && type.IsPrimitive == false
+			return type.GetTypeInfo().IsValueType && type.GetTypeInfo().IsPrimitive == false
 			       	? ldloca( localBuilder ).initobj( type )
 			       	: LoadInitValue( type ).stloc( localBuilder );
 		}
@@ -4348,7 +4265,7 @@ namespace Fasterflect.Emitter
 			return
 				type == typeof(object)
 					? this
-					: (type.IsValueType
+					: (type.GetTypeInfo().IsValueType
 					   	? unbox_any( type )
 					   	: castclass( type ));
 		}
@@ -4361,7 +4278,7 @@ namespace Fasterflect.Emitter
 		{
 			// m_maxStackSize isn't public so we need some hacking here.
 			//
-			FieldInfo fi = _ilGenerator.GetType().GetField(
+			FieldInfo fi = _ilGenerator.GetType().GetTypeInfo().GetField(
 				"m_maxStackSize", BindingFlags.Instance | BindingFlags.NonPublic );
 
 			if( fi != null )

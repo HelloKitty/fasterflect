@@ -309,13 +309,13 @@ namespace Fasterflect
 			}
 
 			var result = hasTypes
-				? type.GetMethod( name, bindingFlags, null, parameterTypes, null )
-				: type.GetMethod( name, bindingFlags );
+				? type.GetTypeInfo().GetMethod( name, parameterTypes)
+				: type.GetTypeInfo().GetMethod( name, bindingFlags );
 			if( result == null && bindingFlags.IsNotSet( Flags.DeclaredOnly ) )
 			{
-				if( type.BaseType != typeof(object) && type.BaseType != null )
+				if( type.GetTypeInfo().BaseType != typeof(object) && type.GetTypeInfo().BaseType != null )
 				{
-					return type.BaseType.Method( name, parameterTypes, bindingFlags ).MakeGeneric( genericTypes );
+					return type.GetTypeInfo().BaseType.Method( name, parameterTypes, bindingFlags ).MakeGeneric( genericTypes );
 				}
 			}
 			bool hasSpecialFlags =
@@ -449,7 +449,7 @@ namespace Fasterflect
 
 			if( ! recurse && ! hasNames && ! hasTypes && ! hasSpecialFlags )
 			{
-				return type.GetMethods( bindingFlags ) ?? new MethodInfo[0];
+				return type.GetTypeInfo().GetMethods( bindingFlags ) ?? new MethodInfo[0];
 			}
 
 			var methods = GetMethods( type, bindingFlags );
@@ -466,19 +466,19 @@ namespace Fasterflect
 
 			if( ! recurse )
 			{
-				return type.GetMethods( bindingFlags ) ?? new MethodInfo[0];
+				return type.GetTypeInfo().GetMethods( bindingFlags ) ?? new MethodInfo[0];
 			}
 
 			bindingFlags |= Flags.DeclaredOnly;
 			bindingFlags &= ~BindingFlags.FlattenHierarchy;
 
 			var methods = new List<MethodInfo>();
-			methods.AddRange( type.GetMethods( bindingFlags ) );
-			Type baseType = type.BaseType;
+			methods.AddRange( type.GetTypeInfo().GetMethods( bindingFlags ) );
+			Type baseType = type.GetTypeInfo().BaseType;
 			while( baseType != null && baseType != typeof(object) )
 			{
-				methods.AddRange( baseType.GetMethods( bindingFlags ) );
-				baseType = baseType.BaseType;
+				methods.AddRange( baseType.GetTypeInfo().GetMethods( bindingFlags ) );
+				baseType = baseType.GetTypeInfo().BaseType;
 			}
 			return methods;
 		}
