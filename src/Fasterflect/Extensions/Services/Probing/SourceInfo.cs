@@ -58,7 +58,7 @@ namespace Fasterflect.Probing
 
 		public static SourceInfo CreateFromType( Type type )
 		{
-            IList<MemberInfo> members = type.Members(MemberTypes.Field | MemberTypes.Property, Flags.InstanceAnyVisibility);
+			IList<MemberInfo> members = type.Members(MemberTypes.Field | MemberTypes.Property, Flags.InstanceAnyVisibility);
 			var names = new List<string>(members.Count);
 			var types = new List<Type>(members.Count);
 			var kinds = new List<bool>(members.Count);
@@ -168,7 +168,7 @@ namespace Fasterflect.Probing
 		{
 			int hash = type.GetHashCode();
 			for( int i = 0; i < paramNames.Length; i++ )
-			    hash += (i + 31) * paramNames[ i ].GetHashCode() ^ paramTypes[ i ].GetHashCode();
+				hash += (i + 31) * paramNames[ i ].GetHashCode() ^ paramTypes[ i ].GetHashCode();
 			return hash;
 		}
 		#endregion

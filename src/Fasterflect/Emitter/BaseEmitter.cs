@@ -27,11 +27,21 @@ namespace Fasterflect.Emitter
 	{
 		private static readonly Cache<CallInfo, Delegate> cache = new Cache<CallInfo, Delegate>();
 
+#if NETSTANDARD1_6
 		protected static readonly MethodInfo StructGetMethod =
-			Constants.StructType.GetMethod( "get_Value", BindingFlags.Public | BindingFlags.Instance );
+			Constants.StructType.GetTypeInfo().GetMethod( "get_Value", BindingFlags.Public | BindingFlags.Instance );
+#else
+		protected static readonly MethodInfo StructGetMethod =
+			Constants.StructType.GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
+#endif
 
+#if NETSTANDARD1_6
 		protected static readonly MethodInfo StructSetMethod =
+			Constants.StructType.GetTypeInfo().GetMethod( "set_Value", BindingFlags.Public | BindingFlags.Instance );
+#else
+				protected static readonly MethodInfo StructSetMethod =
 			Constants.StructType.GetMethod( "set_Value", BindingFlags.Public | BindingFlags.Instance );
+#endif
 
 		protected CallInfo CallInfo;
 		protected DynamicMethod Method;

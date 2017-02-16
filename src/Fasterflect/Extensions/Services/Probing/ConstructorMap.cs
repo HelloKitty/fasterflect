@@ -28,8 +28,8 @@ namespace Fasterflect.Probing
 		private ConstructorInvoker invoker;
 
 		public ConstructorMap( ConstructorInfo constructor, string[] paramNames, Type[] parameterTypes, 
-			                   object[] sampleParamValues, bool mustUseAllParameters )
-            : base(constructor, paramNames, parameterTypes, sampleParamValues, mustUseAllParameters)
+							   object[] sampleParamValues, bool mustUseAllParameters )
+			: base(constructor, paramNames, parameterTypes, sampleParamValues, mustUseAllParameters)
 		{
 		}
 

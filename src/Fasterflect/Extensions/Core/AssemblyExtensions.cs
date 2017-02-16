@@ -88,9 +88,16 @@ namespace Fasterflect
 		/// <returns>A list of all matching types. This value will never be null.</returns>
 		public static IList<Type> TypesWith( this Assembly assembly, Type attributeType )
 		{
+#if NETSTANDARD1_6
 			IEnumerable<Type> query = from t in assembly.GetTypes()
-			                          where t.HasAttribute( attributeType )
+			                          where t.GetTypeInfo().HasAttribute( attributeType )
 			                          select t;
+
+#else
+			IEnumerable<Type> query = from t in assembly.GetTypes()
+									  where t.HasAttribute(attributeType)
+									  select t;
+#endif
 			return query.ToArray();
 		}
 
@@ -103,6 +110,6 @@ namespace Fasterflect
 		{
 			return assembly.TypesWith( typeof(T) );
 		}
-		#endregion
+#endregion
 	}
 }
