@@ -146,7 +146,15 @@ namespace Fasterflect
 		public static ConstructorInfo Constructor( this Type type, Flags bindingFlags, params Type[] parameterTypes )
 		{
 			//TODO: Change this back to a more specific
-			return type.GetTypeInfo().GetConstructor(parameterTypes);
+			ConstructorInfo[] ctors = type.GetTypeInfo().GetConstructors(bindingFlags);
+
+			for (int i = 0; i < ctors.Length; i++)
+			{
+				if (ctors[i].HasParameterSignature(parameterTypes))
+					return ctors[i];
+			}
+
+			return null;
 		}
 		#endregion
 
@@ -172,6 +180,6 @@ namespace Fasterflect
 		{
 			return type.GetTypeInfo().GetConstructors( bindingFlags ); //.Where( ci => !ci.IsAbstract ).ToList();
 		}
-		#endregion
+#endregion
 	}
 }

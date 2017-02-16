@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Fasterflect.Emitter
@@ -31,7 +32,17 @@ namespace Fasterflect.Emitter
 			if (constructor != null)
 				return constructor;
 
-			constructor = callInfo.TargetType.Constructor( callInfo.BindingFlags, callInfo.ParamTypes );
+			//TODO: Use Fasterflec Ctor extension once it is fixed
+			//TODO: Change this back to a more specific
+			ConstructorInfo[] ctors = callInfo.TargetType.GetTypeInfo().GetConstructors(callInfo.BindingFlags);
+
+			//TODO: Handle other CallInfo parameters
+			foreach (ConstructorInfo ctorInfo in ctors)
+			{
+				if (ctorInfo.HasParameterSignature(callInfo.ParamTypes))
+					constructor = ctorInfo;
+			}
+
 			if (constructor == null)
 				throw new MissingMemberException("Constructor does not exist");
 			callInfo.MemberInfo = constructor;
@@ -44,11 +55,15 @@ namespace Fasterflect.Emitter
 			var method = callInfo.MemberInfo as MethodInfo;
 			if (method != null)
 				return method;
-			method = callInfo.TargetType.Method(callInfo.GenericTypes, callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
+
+			if(callInfo.GenericTypes == null || callInfo.GenericTypes.Length == 0)
+				method = callInfo.TargetType.Method(callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
+			else
+				method = callInfo.TargetType.Method(callInfo.GenericTypes, callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
+
 			if (method == null)
 			{
-				const string fmt = "No match for method with name {0} and flags {1} on type {2}.";
-				throw new MissingMethodException( string.Format( fmt, callInfo.Name, callInfo.BindingFlags, callInfo.TargetType ) );
+				throw new MissingMethodException($"No match for method with name {callInfo.Name} and flags {callInfo.BindingFlags} on type {callInfo.TargetType} with parameter count {callInfo.ParamTypes?.Count()} and types: {callInfo.ParamTypes?.Aggregate("", (x, y) => $"{x}:{y}")}.");
 			}
 			callInfo.MemberInfo = method;
 			callInfo.MethodParamTypes = method.GetParameters().ToTypeArray();

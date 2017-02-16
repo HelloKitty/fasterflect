@@ -91,7 +91,7 @@ namespace FasterflectTest.Invocation
                    {
                        var result = funcs[ i ]();
                        Assert.IsNotNull( result );
-                       Assert.IsInstanceOfType( result, types[ i ] );
+                       Assert.IsInstanceOfType(types[ i ], result);
                    }
                } );
         }
