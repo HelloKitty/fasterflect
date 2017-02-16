@@ -1,3 +1,5 @@
+## .NET Core and NETStandard support! 
+
 #### NuGet
 Fasterflect is available on NuGet: https://www.nuget.org/packages/fasterflect/
 
