@@ -2,18 +2,44 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
-    "System.Reflection.Emit.Lightweight": "4.3.0"
   },
 
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
-    }
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Reflection.Emit.Lightweight": "4.3.0"
+      }
+    },
+    "net45": {
+
+    },
+    "net35": {
+
+    },
+    "net46":
+    {
+      
+    } 
   },
 
   "buildOptions": {
     "outputName": "Fasterflect.Netstandard"
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
