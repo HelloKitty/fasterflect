@@ -21,9 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace Fasterflect.Probing
 {
@@ -33,51 +32,6 @@ namespace Fasterflect.Probing
 	public static class TypeConverter
 	{
 		#region GetValue methods
-		/// <summary>
-		/// Convert the supplied XmlNode into the specified target type. Only the InnerXml portion
-		/// of the XmlNode is used in the conversion, unless the target type is itself an XmlNode.
-		/// </summary>
-		/// <param name="targetType">The type into which to convert</param>
-		/// <param name="node">The source value used in the conversion operation</param>
-		/// <returns>The converted value</returns>
-		public static object Get( Type targetType, XmlNode node )
-		{
-			if( targetType == typeof(XmlNode) )
-			{
-				return node;
-			}
-			return Get( targetType, node.InnerXml );
-		}
-		/// <summary>
-		/// Convert the supplied XAttribute into the specified target type. Only the Value portion
-		/// of the XAttribute is used in the conversion, unless the target type is itself an XAttribute.
-		/// </summary>
-		/// <param name="targetType">The type into which to convert</param>
-		/// <param name="attribute">The source value used in the conversion operation</param>
-		/// <returns>The converted value</returns>
-		public static object Get( Type targetType, XAttribute attribute )
-		{
-			if( targetType == typeof(XAttribute) )
-			{
-				return attribute;
-			}
-			return Get( targetType, attribute.Value );
-		}
-		/// <summary>
-		/// Convert the supplied XElement into the specified target type. Only the Value portion
-		/// of the XElement is used in the conversion, unless the target type is itself an XElement.
-		/// </summary>
-		/// <param name="targetType">The type into which to convert</param>
-		/// <param name="element">The source value used in the conversion operation</param>
-		/// <returns>The converted value</returns>
-		public static object Get( Type targetType, XElement element )
-		{
-			if( targetType == typeof(XElement) )
-			{
-				return element;
-			}
-			return Get( targetType, element.Value );
-		}
 
 		/// <summary>
 		/// Convert the supplied string into the specified target type. 
@@ -94,7 +48,7 @@ namespace Fasterflect.Probing
 			}
 			try
 			{
-				if( targetType.IsEnum )
+				if( targetType.isEnumType() )
 				{
 					return ConvertEnums( targetType, sourceType, value );
 				}
@@ -135,19 +89,7 @@ namespace Fasterflect.Probing
 			{
 				return Get( targetType, value as string );
 			}
-			if( sourceType == typeof(XmlNode) )
-			{
-				return Get( targetType, value as XmlNode );
-			}
-			if( sourceType == typeof(XAttribute) )
-			{
-				return Get( targetType, value as XAttribute );
-			}
-			if( sourceType == typeof(XElement) )
-			{
-				return Get( targetType, value as XElement );
-			}
-			if( targetType.IsEnum || sourceType.IsEnum )
+			if( targetType.isEnumType() || sourceType.isEnumType())
 			{
 				return ConvertEnums( targetType, sourceType, value );
 			}
@@ -161,9 +103,9 @@ namespace Fasterflect.Probing
 			}
 			return value is IConvertible ? Convert.ChangeType( value, targetType ) : null;
 		}
-		#endregion
+#endregion
 
-		#region Type conversions
+#region Type conversions
 		/// <summary>
 		/// A method that will convert between types and their textual names.
 		/// </summary>
@@ -187,15 +129,15 @@ namespace Fasterflect.Probing
 			}
 			return null;
 		}
-		#endregion
+#endregion
 
-		#region Enum conversions
+#region Enum conversions
 		/// <summary>
 		/// Helper method for converting enums from/to different types.
 		/// </summary>
 		private static object ConvertEnums( Type targetType, Type sourceType, object value )
 		{
-			if( targetType.IsEnum )
+			if( targetType.isEnumType())
 			{
 				if( sourceType == typeof(string) )
 				{
@@ -217,9 +159,9 @@ namespace Fasterflect.Probing
 			}
 			return Convert.ChangeType( value, targetType );
 		}
-		#endregion
+#endregion
 
-		#region GUID conversions
+#region GUID conversions
 		/// <summary>
 		/// Convert the binary string (16 bytes) into a Guid.
 		/// </summary>
@@ -284,6 +226,6 @@ namespace Fasterflect.Probing
 			return null;
 			// Check.FailPostcondition( typeof(TypeConverter), "Cannot convert type {0} to type {1}.", sourceType, targetType );
 		}
-		#endregion
+#endregion
 	}
 }
