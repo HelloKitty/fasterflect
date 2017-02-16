@@ -1,1 +1,1 @@
-dotnet pack src/Fasterflect/ -c Release
+dotnet pack src/Fasterflect.Netstandard/ -c Release
