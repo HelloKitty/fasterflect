@@ -24,152 +24,152 @@ using System.Reflection;
 namespace Fasterflect
 {
 	internal static class MemberFilter
-    {
-        public static bool IsReservedName( this string name )
-        {
-            name = name.ToLowerInvariant();
-            return name == ".ctor" || name == ".cctor";
-        }
+	{
+		public static bool IsReservedName( this string name )
+		{
+			name = name.ToLowerInvariant();
+			return name == ".ctor" || name == ".cctor";
+		}
 
-        public static string TrimExplicitlyImplementedName( this string name )
-        {
-            int index = name.IsReservedName() ? -1 : name.LastIndexOf( '.' ) + 1;
-            return index > 0 ? name.Substring( index ) : name;
-        }
+		public static string TrimExplicitlyImplementedName( this string name )
+		{
+			int index = name.IsReservedName() ? -1 : name.LastIndexOf( '.' ) + 1;
+			return index > 0 ? name.Substring( index ) : name;
+		}
 
-        /// <summary>
-        /// This method applies name filtering to a set of members.
-        /// </summary>
-        public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags, string[] names )
-            where T : MemberInfo
-        {
-            var result = new List<T>( members.Count );
-            bool ignoreCase = bindingFlags.IsSet( Flags.IgnoreCase );
-            bool isPartial = bindingFlags.IsSet( Flags.PartialNameMatch );
-            bool trimExplicit = bindingFlags.IsSet( Flags.TrimExplicitlyImplemented );
+		/// <summary>
+		/// This method applies name filtering to a set of members.
+		/// </summary>
+		public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags, string[] names )
+			where T : MemberInfo
+		{
+			var result = new List<T>( members.Count );
+			bool ignoreCase = bindingFlags.IsSet( Flags.IgnoreCase );
+			bool isPartial = bindingFlags.IsSet( Flags.PartialNameMatch );
+			bool trimExplicit = bindingFlags.IsSet( Flags.TrimExplicitlyImplemented );
 
-            for( int i = 0; i < members.Count; i++ )
-            {
-                var member = members[ i ];
-                var memberName = trimExplicit ? member.Name.TrimExplicitlyImplementedName() : member.Name;
-                for( int j = 0; j < names.Length; j++ )
-                {
-                    var name = names[ j ];
-                	var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-                    bool match = isPartial ? memberName.Contains( name ) : memberName.Equals( name, comparison );
-                    if( match )
-                    {
+			for( int i = 0; i < members.Count; i++ )
+			{
+				var member = members[ i ];
+				var memberName = trimExplicit ? member.Name.TrimExplicitlyImplementedName() : member.Name;
+				for( int j = 0; j < names.Length; j++ )
+				{
+					var name = names[ j ];
+					var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+					bool match = isPartial ? memberName.Contains( name ) : memberName.Equals( name, comparison );
+					if( match )
+					{
 						result.Add( member );
-                    	break;
-                    }
-                }
-            }
-            return result;
-        }
+						break;
+					}
+				}
+			}
+			return result;
+		}
 
-        /// <summary>
-        /// This method applies type parameter type filtering to a set of methods.
-        /// </summary>
-        public static IList<T> Filter<T>(this IList<T> methods, Type[] genericTypes)
-            where T : MethodBase
-        {
-            var result = new List<T>(methods.Count);
-            for (int i = 0; i < methods.Count; i++)
-            {
-                var method = methods[i];
-                if (method.ContainsGenericParameters)
-                {
-                    var genericArgs = method.GetGenericArguments();
-                    if (genericArgs.Length != genericTypes.Length)
-                        continue; 
-                    result.Add(method);
-                }
-            }
-            return result;
-        }
+		/// <summary>
+		/// This method applies type parameter type filtering to a set of methods.
+		/// </summary>
+		public static IList<T> Filter<T>(this IList<T> methods, Type[] genericTypes)
+			where T : MethodBase
+		{
+			var result = new List<T>(methods.Count);
+			for (int i = 0; i < methods.Count; i++)
+			{
+				var method = methods[i];
+				if (method.ContainsGenericParameters)
+				{
+					var genericArgs = method.GetGenericArguments();
+					if (genericArgs.Length != genericTypes.Length)
+						continue; 
+					result.Add(method);
+				}
+			}
+			return result;
+		}
 
-        /// <summary>
-        /// This method applies method parameter type filtering to a set of methods.
-        /// </summary>
-        public static IList<T> Filter<T>( this IList<T> methods, Flags bindingFlags, Type[] paramTypes )
-            where T : MethodBase
-        {
-            var result = new List<T>( methods.Count );
+		/// <summary>
+		/// This method applies method parameter type filtering to a set of methods.
+		/// </summary>
+		public static IList<T> Filter<T>( this IList<T> methods, Flags bindingFlags, Type[] paramTypes )
+			where T : MethodBase
+		{
+			var result = new List<T>( methods.Count );
 
-            bool exact = bindingFlags.IsSet( Flags.ExactBinding );
-            for( int i = 0; i < methods.Count; i++ )
-            {
-                var method = methods[ i ];
+			bool exact = bindingFlags.IsSet( Flags.ExactBinding );
+			for( int i = 0; i < methods.Count; i++ )
+			{
+				var method = methods[ i ];
 				// verify parameters
-            	var parameters = method.GetParameters();
-                if( parameters.Length != paramTypes.Length )
-                {
-                    continue;
-                }
+				var parameters = method.GetParameters();
+				if( parameters.Length != paramTypes.Length )
+				{
+					continue;
+				}
 				// verify parameter type compatibility
-                bool match = true;
-                for( int j = 0; j < paramTypes.Length; j++ )
-                {
-                    var type = paramTypes[ j ];
-                    var parameter = parameters[ j ];
-                	Type parameterType = parameter.ParameterType;
-                	bool ignoreParameterModifiers = ! exact;
+				bool match = true;
+				for( int j = 0; j < paramTypes.Length; j++ )
+				{
+					var type = paramTypes[ j ];
+					var parameter = parameters[ j ];
+					Type parameterType = parameter.ParameterType;
+					bool ignoreParameterModifiers = ! exact;
 					if( ignoreParameterModifiers && parameterType.IsByRef )
 					{
 						string name = parameterType.FullName;
 						parameterType = Type.GetType( name.Substring( 0, name.Length - 1 ) ) ?? parameterType;
 					}
-                    match &= parameterType.IsGenericParameter || parameterType.ContainsGenericParameters || (exact ? type == parameterType : parameterType.IsAssignableFrom( type ));
-                    if( ! match )
-                    {
-                        break;
-                    }
-                }
+					match &= parameterType.IsGenericParameter || parameterType.ContainsGenericParameters || (exact ? type == parameterType : parameterType.IsAssignableFrom( type ));
+					if( ! match )
+					{
+						break;
+					}
+				}
 				if( match )
 				{
-	                result.Add( method );
+					result.Add( method );
 				}
-            }
-            return result;
-        }
+			}
+			return result;
+		}
 
-        /// <summary>
-        /// This method applies member type filtering to a set of members.
-        /// </summary>
-        public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags, MemberTypes memberTypes )
-            where T : MemberInfo
-        {
-            var result = new List<T>( members.Count );
+		/// <summary>
+		/// This method applies member type filtering to a set of members.
+		/// </summary>
+		public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags, MemberTypes memberTypes )
+			where T : MemberInfo
+		{
+			var result = new List<T>( members.Count );
 
-            for( int i = 0; i < members.Count; i++ )
-            {
-                var member = members[ i ];
-                bool match = (member.MemberType & memberTypes) == member.MemberType;
-                if( ! match )
-                {
+			for( int i = 0; i < members.Count; i++ )
+			{
+				var member = members[ i ];
+				bool match = (member.MemberType & memberTypes) == member.MemberType;
+				if( ! match )
+				{
 					continue;
-                }
-                result.Add( member );
-            }
-            return result;
-        }
+				}
+				result.Add( member );
+			}
+			return result;
+		}
 
-        /// <summary>
-        /// This method applies flags-based filtering to a set of members.
-        /// </summary>
-        public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags ) where T : MemberInfo
-        {
-            var result = new List<T>( members.Count );
-        	var properties = new List<string>( members.Count );
+		/// <summary>
+		/// This method applies flags-based filtering to a set of members.
+		/// </summary>
+		public static IList<T> Filter<T>( this IList<T> members, Flags bindingFlags ) where T : MemberInfo
+		{
+			var result = new List<T>( members.Count );
+			var properties = new List<string>( members.Count );
 
-            bool excludeHidden = bindingFlags.IsSet( Flags.ExcludeHiddenMembers );
-            bool excludeBacking = bindingFlags.IsSet( Flags.ExcludeBackingMembers );
-            bool excludeExplicit = bindingFlags.IsSet( Flags.ExcludeExplicitlyImplemented );
+			bool excludeHidden = bindingFlags.IsSet( Flags.ExcludeHiddenMembers );
+			bool excludeBacking = bindingFlags.IsSet( Flags.ExcludeBackingMembers );
+			bool excludeExplicit = bindingFlags.IsSet( Flags.ExcludeExplicitlyImplemented );
 
-            for( int i = 0; i < members.Count; i++ )
-            {
-                var member = members[ i ];
-            	bool exclude = false;
+			for( int i = 0; i < members.Count; i++ )
+			{
+				var member = members[ i ];
+				bool exclude = false;
 				if( excludeHidden )
 				{
 					var method = member as MethodBase;
@@ -182,13 +182,13 @@ namespace Fasterflect
 				{
 					exclude |= member is FieldInfo && member.Name[ 0 ] == '<';
 					var method = member as MethodInfo;
- 					if( method != null )
- 					{
- 						// filter out property backing methods
+					if( method != null )
+					{
+						// filter out property backing methods
 						exclude |= member.Name.Length > 4 && member.Name.Substring( 1, 3 ) == "et_";
 						// filter out base implementations when an overrride exists
 						exclude |= result.ContainsOverride( method );
- 					}
+					}
 					var property = member as PropertyInfo;
 					if( property != null )
 					{
@@ -200,21 +200,21 @@ namespace Fasterflect
 						}
 					}
 				}
-                exclude |= excludeExplicit && member.Name.Contains( "." ) && ! member.Name.IsReservedName();
-                if( exclude )
-                {
+				exclude |= excludeExplicit && member.Name.Contains( "." ) && ! member.Name.IsReservedName();
+				if( exclude )
+				{
 					continue;
-                }
-                result.Add( member );
-            }
-            return result;
-        }
+				}
+				result.Add( member );
+			}
+			return result;
+		}
 
 		private static bool ContainsOverride<T>( this IList<T> candidates, MethodInfo method ) where T : MemberInfo
-    	{
+		{
 			if( ! method.IsVirtual )
 				return false;
-   			var parameters = method.Parameters();
+			var parameters = method.Parameters();
 			for( int i = 0; i < candidates.Count; i++ )
 			{
 				MethodInfo candidate = candidates[ i ] as MethodInfo;
@@ -228,6 +228,6 @@ namespace Fasterflect
 				}
 			}
 			return false;
-    	}
-    }
+		}
+	}
 }

@@ -21,16 +21,16 @@
 
 namespace Fasterflect.Caching
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Diagnostics;
-    
-    [DebuggerStepThrough]
-    internal sealed class Cache<TKey, TValue>
-    {
-        private readonly IDictionary<TKey, object> entries;
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Diagnostics;
+	
+	[DebuggerStepThrough]
+	internal sealed class Cache<TKey, TValue>
+	{
+		private readonly IDictionary<TKey, object> entries;
 
 		#region Constructors
 		public Cache()
@@ -157,5 +157,5 @@ namespace Fasterflect.Caching
 			return count > 0 ? String.Format("Cache contains {0} live objects.", count) : "Cache is empty.";
 		}
 		#endregion
-    }
+	}
 }

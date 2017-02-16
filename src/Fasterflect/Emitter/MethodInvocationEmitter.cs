@@ -35,8 +35,8 @@ namespace Fasterflect.Emitter
 		}
 
 		private MethodInvocationEmitter( Type targetType, Flags bindingFlags, string name, Type[] parameterTypes,
-		                                 MemberInfo methodInfo )
-            : base(new CallInfo(targetType, null, bindingFlags, MemberTypes.Method, name, parameterTypes, methodInfo, true))
+										 MemberInfo methodInfo )
+			: base(new CallInfo(targetType, null, bindingFlags, MemberTypes.Method, name, parameterTypes, methodInfo, true))
 		{
 		}
 
@@ -63,8 +63,8 @@ namespace Fasterflect.Emitter
 				startUsableLocalIndex = CreateLocalsForByRefParams( paramArrayIndex, method );
 					// create by_ref_locals from argument array
 				Generator.DeclareLocal( hasReturnType
-				                        	? method.ReturnType
-				                        	: Constants.ObjectType ); // T result;
+											? method.ReturnType
+											: Constants.ObjectType ); // T result;
 				GenerateInvocation( method, paramArrayIndex, (byte) (startUsableLocalIndex + 1) );
 				if( hasReturnType )
 				{
@@ -75,8 +75,8 @@ namespace Fasterflect.Emitter
 			else
 			{
 				Generator.DeclareLocal( hasReturnType
-				                        	? method.ReturnType
-				                        	: Constants.ObjectType ); // T result;
+											? method.ReturnType
+											: Constants.ObjectType ); // T result;
 				GenerateInvocation( method, paramArrayIndex, (byte) (startUsableLocalIndex + 1) );
 				if( hasReturnType )
 				{

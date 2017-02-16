@@ -26,7 +26,7 @@ using Fasterflect.Emitter;
 
 namespace Fasterflect
 {
-    [DebuggerStepThrough]
+	[DebuggerStepThrough]
 	internal static class Utils
 	{
 		public static Type GetTypeAdjusted( this object obj )
@@ -34,25 +34,25 @@ namespace Fasterflect
 			var wrapper = obj as ValueTypeHolder;
 			return wrapper == null
 				? obj is Type ? obj as Type : obj.GetType()
-			    : wrapper.Value.GetType();
+				: wrapper.Value.GetType();
 		}
 
-        public static Type[] ToTypeArray(this ParameterInfo[] parameters)
-        {
-            if (parameters.Length == 0)
-                return Type.EmptyTypes;
-            var types = new Type[parameters.Length];
-            for (int i = 0; i < types.Length; i++)
-            {
-                types[i] = parameters[i].ParameterType;
-            }
-            return types;
-        }
+		public static Type[] ToTypeArray(this ParameterInfo[] parameters)
+		{
+			if (parameters.Length == 0)
+				return Type.EmptyTypes;
+			var types = new Type[parameters.Length];
+			for (int i = 0; i < types.Length; i++)
+			{
+				types[i] = parameters[i].ParameterType;
+			}
+			return types;
+		}
 
 		public static Type[] ToTypeArray(this object[] objects)
-        {
-            if (objects.Length == 0)
-                return Type.EmptyTypes;
+		{
+			if (objects.Length == 0)
+				return Type.EmptyTypes;
 			var types = new Type[objects.Length];
 			for (int i = 0; i < types.Length; i++)
 			{

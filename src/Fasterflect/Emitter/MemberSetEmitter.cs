@@ -24,37 +24,37 @@ using System.Reflection.Emit;
 
 namespace Fasterflect.Emitter
 {
-    internal class MemberSetEmitter : BaseEmitter
-    {
-        public MemberSetEmitter(MemberInfo memberInfo, Flags bindingFlags)
-            : this(memberInfo.DeclaringType, bindingFlags, memberInfo.MemberType, memberInfo.Name, memberInfo)
-        {
-        }
-
-		public MemberSetEmitter(Type targetType, Flags bindingFlags, MemberTypes memberType, string fieldOrProperty)
-            : this(targetType, bindingFlags, memberType, fieldOrProperty, null)
+	internal class MemberSetEmitter : BaseEmitter
+	{
+		public MemberSetEmitter(MemberInfo memberInfo, Flags bindingFlags)
+			: this(memberInfo.DeclaringType, bindingFlags, memberInfo.MemberType, memberInfo.Name, memberInfo)
 		{
 		}
 
-        private MemberSetEmitter(Type targetType, Flags bindingFlags, MemberTypes memberType, string fieldOrProperty, MemberInfo memberInfo)
-            : base(new CallInfo(targetType, null, bindingFlags, memberType, fieldOrProperty, Constants.ArrayOfObjectType, memberInfo, false))
-        {
-        }
-        internal MemberSetEmitter(CallInfo callInfo) : base(callInfo)
-        {
-        }
+		public MemberSetEmitter(Type targetType, Flags bindingFlags, MemberTypes memberType, string fieldOrProperty)
+			: this(targetType, bindingFlags, memberType, fieldOrProperty, null)
+		{
+		}
 
-        protected internal override DynamicMethod CreateDynamicMethod()
-        {
-            return CreateDynamicMethod("setter", CallInfo.TargetType, null, new[] { Constants.ObjectType, Constants.ObjectType });
-        }
+		private MemberSetEmitter(Type targetType, Flags bindingFlags, MemberTypes memberType, string fieldOrProperty, MemberInfo memberInfo)
+			: base(new CallInfo(targetType, null, bindingFlags, memberType, fieldOrProperty, Constants.ArrayOfObjectType, memberInfo, false))
+		{
+		}
+		internal MemberSetEmitter(CallInfo callInfo) : base(callInfo)
+		{
+		}
+
+		protected internal override DynamicMethod CreateDynamicMethod()
+		{
+			return CreateDynamicMethod("setter", CallInfo.TargetType, null, new[] { Constants.ObjectType, Constants.ObjectType });
+		}
 
 		protected internal override Delegate CreateDelegate()
 		{
-	    	MemberInfo member = CallInfo.MemberInfo;
+			MemberInfo member = CallInfo.MemberInfo;
 			if( member == null )
 			{
-		    	member = LookupUtils.GetMember( CallInfo );
+				member = LookupUtils.GetMember( CallInfo );
 				CallInfo.IsStatic = member.IsStatic();
 			}
 			bool handleInnerStruct = CallInfo.ShouldHandleInnerStruct;
@@ -79,25 +79,25 @@ namespace Fasterflect.Emitter
 				}
 			}
 
-            Generator.CastFromObject( member.Type() );				// unbox | cast value-to-be-set
+			Generator.CastFromObject( member.Type() );				// unbox | cast value-to-be-set
 			if (member.MemberType == MemberTypes.Field)
 			{
 				var field = member as FieldInfo;
-                Generator.stfld(field.IsStatic, field);				// (this|tmpStr).field = value-to-be-set;
+				Generator.stfld(field.IsStatic, field);				// (this|tmpStr).field = value-to-be-set;
 			}
 			else
 			{
 				var prop = member as PropertyInfo;
 				MethodInfo setMethod = LookupUtils.GetPropertySetMethod(prop, CallInfo);
-                Generator.call(setMethod.IsStatic || CallInfo.IsTargetTypeStruct, setMethod); // (this|tmpStr).set_Prop(value-to-be-set);
+				Generator.call(setMethod.IsStatic || CallInfo.IsTargetTypeStruct, setMethod); // (this|tmpStr).set_Prop(value-to-be-set);
 			}
 
 			if (handleInnerStruct)
 			{
-                StoreLocalToInnerStruct(0); // ((ValueTypeHolder)this)).Value = tmpStr
+				StoreLocalToInnerStruct(0); // ((ValueTypeHolder)this)).Value = tmpStr
 			}
 
-		    Generator.ret();
+			Generator.ret();
 
 			return Method.CreateDelegate(typeof (MemberSetter));
 		}
