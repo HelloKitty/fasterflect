@@ -45,8 +45,8 @@ namespace Fasterflect
 		/// <seealso cref="CallMethod(object,string,System.Type[],object[])"/>
 		public static object CallMethod( this object obj, string name, params object[] parameters )
 		{
-			return DelegateForCallMethod( obj.GetTypeAdjusted(), null, name, Flags.StaticInstanceAnyVisibility, parameters.ToTypeArray() )
-				( obj, parameters );
+			return DelegateForCallMethod(obj.GetTypeAdjusted(), null, name, Flags.StaticInstanceAnyVisibility, parameters.ToTypeArray())
+				(obj, parameters);
 		}
 
 		/// <summary>
@@ -305,17 +305,25 @@ namespace Fasterflect
 			processAll |= hasGenericTypes;
 			if( processAll )
 			{
+				//TODO: Might have to do the same polymorphic parameter type check for generics
 				return type.Methods( genericTypes, parameterTypes, bindingFlags, name ).FirstOrDefault().MakeGeneric( genericTypes );
 			}
 
+			//TODO: Check fasterflect cache first
+			//TODO: Find out why we needed to call HasParameterSignature for polymorphism
 			var result = hasTypes
-				? type.GetTypeInfo().GetMethod( name, parameterTypes)
+				? type.GetTypeInfo().GetMethods(bindingFlags).FirstOrDefault(mi => mi.Name == name && mi.HasParameterSignature(parameterTypes))
 				: type.GetTypeInfo().GetMethod( name, bindingFlags );
 			if( result == null && bindingFlags.IsNotSet( Flags.DeclaredOnly ) )
 			{
 				if( type.GetTypeInfo().BaseType != typeof(object) && type.GetTypeInfo().BaseType != null )
 				{
-					return type.GetTypeInfo().BaseType.Method( name, parameterTypes, bindingFlags ).MakeGeneric( genericTypes );
+					//TODO: Added slow polymorphic type checking
+					//TODO: Check fasterflect cache first
+					if (hasTypes)
+						return type.GetTypeInfo().BaseType.GetTypeInfo().GetMethods(bindingFlags).FirstOrDefault(mi => mi.Name == name && mi.HasParameterSignature(parameterTypes));
+					else
+						return type.GetTypeInfo().BaseType.Method(name, parameterTypes, bindingFlags);
 				}
 			}
 			bool hasSpecialFlags =

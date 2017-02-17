@@ -32,16 +32,22 @@ namespace Fasterflect.Emitter
 			if (constructor != null)
 				return constructor;
 
+			constructor = callInfo.TargetType.Constructor(callInfo.BindingFlags, callInfo.ParamTypes);
+
 			//TODO: Use Fasterflec Ctor extension once it is fixed
 			//TODO: Change this back to a more specific
-			ConstructorInfo[] ctors = callInfo.TargetType.GetTypeInfo().GetConstructors(callInfo.BindingFlags);
-
-			//TODO: Handle other CallInfo parameters
-			foreach (ConstructorInfo ctorInfo in ctors)
+			if (constructor == null)
 			{
-				if (ctorInfo.HasParameterSignature(callInfo.ParamTypes))
-					constructor = ctorInfo;
+				ConstructorInfo[] ctors = callInfo.TargetType.GetTypeInfo().GetConstructors(callInfo.BindingFlags);
+
+				//TODO: Handle other CallInfo parameters
+				foreach (ConstructorInfo ctorInfo in ctors)
+				{
+					if (ctorInfo.HasParameterSignature(callInfo.ParamTypes))
+						constructor = ctorInfo;
+				}
 			}
+
 
 			if (constructor == null)
 				throw new MissingMemberException("Constructor does not exist");
@@ -56,15 +62,23 @@ namespace Fasterflect.Emitter
 			if (method != null)
 				return method;
 
-			if(callInfo.GenericTypes == null || callInfo.GenericTypes.Length == 0)
-				method = callInfo.TargetType.Method(callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
-			else
-				method = callInfo.TargetType.Method(callInfo.GenericTypes, callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
+			method = callInfo.TargetType.Method(callInfo.GenericTypes, callInfo.Name, callInfo.ParamTypes, callInfo.BindingFlags);
+
+			//TODO: Not sure why but we must do this to cover some method cases in netstandard
+			if(method == null && callInfo.BindingFlags.IsSet(BindingFlags.NonPublic))
+			{
+				method = callInfo.TargetType.GetTypeInfo().GetMethods(callInfo.BindingFlags)
+				.Where(mi => mi.Name == callInfo.Name)
+				.Where(mi => callInfo.GenericTypes.Any() ? mi.IsGenericMethod : !mi.IsGenericMethod)
+				.FirstOrDefault(mi => mi.HasParameterSignature(callInfo.ParamTypes));
+			}
+				
 
 			if (method == null)
 			{
 				throw new MissingMethodException($"No match for method with name {callInfo.Name} and flags {callInfo.BindingFlags} on type {callInfo.TargetType} with parameter count {callInfo.ParamTypes?.Count()} and types: {callInfo.ParamTypes?.Aggregate("", (x, y) => $"{x}:{y}")}.");
 			}
+
 			callInfo.MemberInfo = method;
 			callInfo.MethodParamTypes = method.GetParameters().ToTypeArray();
 			return method;

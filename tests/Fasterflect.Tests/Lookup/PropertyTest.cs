@@ -71,7 +71,7 @@ namespace FasterflectTest.Lookup
 			var expectedName = AnimalInstancePropertyNames.Where( s => s.Contains( "C" ) ).First();
 			var property = typeof(Animal).Property( "C", flags );
 			Assert.IsNotNull( property );
-			Assert.AreEqual( expectedName, property.Name );
+			Assert.AreEqual(expectedName, property.Name);//, $"Expected: {expectedName} but was {property.Name}." );
 
 			expectedName = AnimalInstancePropertyNames.Where( s => s.Contains( "B" ) ).First();
 			property = typeof(Animal).Property( "B", flags );

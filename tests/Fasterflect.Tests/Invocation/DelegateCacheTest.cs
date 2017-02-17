@@ -35,10 +35,11 @@ namespace FasterflectTest.Invocation
 													typeof(PersonStruct).CreateInstance().WrapIfValueType()
 												};
 
-		private IDictionary delegateMap = (IDictionary)typeof(BaseEmitter).GetFieldValue("cache").GetFieldValue("entries");
-
 		private void ExecuteCacheTest( params Action[] actions )
 		{
+			IDictionary delegateMap = (IDictionary)typeof(BaseEmitter).GetFieldValue("cache").GetFieldValue("entries");
+			delegateMap.Clear();
+
 			int delCount = delegateMap.Count;
 			foreach( var action in actions )
 			{

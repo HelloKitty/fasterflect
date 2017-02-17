@@ -82,7 +82,30 @@ namespace Fasterflect
 		/// <returns>True if the supplied parameter type array matches the method parameters array, false otherwise.</returns>
 		public static bool HasParameterSignature( this MethodBase method, Type[] parameters )
 		{
-			return method.GetParameters().Select( p => p.ParameterType ).SequenceEqual( parameters );
+			bool quickCheckResult = method.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters);
+
+			if (quickCheckResult)
+				return true;
+
+			//TODO: Figure out why we had to add this.
+			ParameterInfo[] parameterInfos = method.GetParameters();
+
+			bool sameSize = parameterInfos.Length == parameters.Length;
+
+			if (!sameSize)
+				return false;
+
+			bool longResult = true;
+			
+			//TODO: For some reason netstandard port didn't support polymorphic ctor inspection.
+			//use both length or you will throw
+			for (int i = 0; i < parameterInfos.Length; i++)
+			{
+				if (!parameterInfos[i].ParameterType.GetTypeInfo().IsAssignableFrom(parameters[i]))
+					longResult = false;
+			}
+
+			return longResult;
 		}
 
 		/// <summary>
@@ -92,7 +115,8 @@ namespace Fasterflect
 		/// <returns>True if the supplied parameter type array matches the method parameters array, false otherwise.</returns>
 		public static bool HasParameterSignature( this MethodBase method, ParameterInfo[] parameters )
 		{
-			return method.GetParameters().Select( p => p.ParameterType ).SequenceEqual( parameters.Select( p => p.ParameterType ) );
+			//Pass to polymorphic implemented paramater sig test
+			return HasParameterSignature(method, parameters.Select(p => p.ParameterType).ToArray());
 		}
 		#endregion
 	}

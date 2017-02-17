@@ -164,7 +164,8 @@ namespace FasterflectTest.Probing
 		}
 		#endregion
 
-		[Test]
+		//TODO: Revisit XML
+		//[Test]
 		public void TestConvertFromString()
 		{
 			XElement xml = new XElement( "Books",
