@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D839B827-0ECA-4151-9A07-9161E209E23F}"
 EndProject
@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{16D1FC09
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fasterflect.Tests", "tests\Fasterflect.Tests\Fasterflect.Tests.csproj", "{281FE21C-F2C0-41C5-92B6-B8F63E126877}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Fasterflect.Netstandard", "src\Fasterflect.Netstandard\Fasterflect.Netstandard.xproj", "{5C6966B7-610E-42D2-9661-C80C46392124}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fasterflect.Netstandard", "src\Fasterflect.Netstandard\Fasterflect.Netstandard.csproj", "{5C6966B7-610E-42D2-9661-C80C46392124}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
