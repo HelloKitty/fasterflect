@@ -1,1 +1,2 @@
-dotnet pack src/Fasterflect.Netstandard/ -c Release
+dotnet restore Fasterflect.sln
+dotnet build Fasterflect.sln
