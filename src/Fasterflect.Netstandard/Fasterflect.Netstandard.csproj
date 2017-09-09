@@ -7,6 +7,14 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Description>A port of Fasterflect to Netstandard.</Description>
+    <PackageProjectUrl>https://github.com/HelloKitty/fasterflect</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <Copyright>Buu Nguyen, Morten Mertner, Andrew Blakely</Copyright>
+    <Authors>Buu Nguyen, Morten Mertner, Andrew Blakely</Authors>
+    <RepositoryUrl>https://github.com/HelloKitty/fasterflect</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>fasterflect netstandard faster flect net standard netcore core port</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.5|AnyCPU'">
