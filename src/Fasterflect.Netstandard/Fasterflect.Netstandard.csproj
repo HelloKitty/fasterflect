@@ -15,6 +15,9 @@
     <RepositoryUrl>https://github.com/HelloKitty/fasterflect</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>fasterflect netstandard faster flect net standard netcore core port</PackageTags>
+
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.5|AnyCPU'">
